@@ -17,6 +17,7 @@ class TeacherProfilesSeeder extends Seeder
                 'experience' => 10,
                 'created_at' => now(),
                 'updated_at' => now(),
+                'photo' => 'first.jpg'
             ],
         ]);
     }

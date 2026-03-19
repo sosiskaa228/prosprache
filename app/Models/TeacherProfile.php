@@ -10,6 +10,7 @@ class TeacherProfile extends Model
         'user_id',
         'bio',
         'experience',
+        'photo'
     ];
 
     public function user()

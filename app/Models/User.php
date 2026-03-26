@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use App\Models\Course;
+use App\Models\Lesson;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -41,4 +43,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'favorites');
     }
+
+    public function completedLessons()
+    {
+        return $this->belongsToMany(Lesson::class, 'lesson_user');
+    }
+
 }

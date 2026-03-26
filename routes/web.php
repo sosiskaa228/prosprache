@@ -22,6 +22,15 @@ Route::get('/contacts', [App\Http\Controllers\PageController::class, 'contacts']
 Route::get('/lesson/{id}', [App\Http\Controllers\LessonController::class, 'show']);
 Route::get('/lesson/{id}/test', [App\Http\Controllers\LessonController::class, 'showTest']);
 
+Route::post('/lessons/{id}/toggle-complete', [App\Http\Controllers\LessonController::class, 'toggleComplete'])->middleware('auth');
+
+
+Route::post('/lesson/{id}/test', [App\Http\Controllers\LessonController::class, 'submitTest'])->middleware('auth');
+
+Route::post('/courses/{id}/enroll', [App\Http\Controllers\CourseController::class, 'enroll'])->middleware('auth');
+
+
+
 
 
 

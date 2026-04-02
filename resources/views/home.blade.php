@@ -42,10 +42,40 @@
             @endif
         </div>
 
-        <div class="col-md-4">
-            <h4 class="mb-3">Избранное</h4>
-            <p>У вас нет курсов в избранном.</p>
+       <div class="col-md-4">
+    <h4 class="mb-4 fw-bold">Избранное</h4>
+    
+    @if($user->favorites->isEmpty())
+        <div class="p-4 bg-light rounded text-center border">
+            <p class="text-muted mb-0">У вас пока нет избранных курсов.</p>
         </div>
+    @else
+        <div class="row gy-3">
+            @foreach($user->favorites as $favoriteCourse)
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-bold mb-1">
+                                        <a href="/courses/{{ $favoriteCourse->id }}" class="text-decoration-none text-dark">
+                                            {{ $favoriteCourse->title }}
+                                        </a>
+                                    </h6>
+                                    <span class="badge bg-secondary" style="font-size: 0.7rem;">
+                                        Уровень: {{ $favoriteCourse->level }}
+                                    </span>
+                                </div>
+                                @livewire('favorite-button', ['course' => $favoriteCourse], key('fav-'.$favoriteCourse->id))
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 
     </div>
 </div>

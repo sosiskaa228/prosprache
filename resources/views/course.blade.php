@@ -9,13 +9,18 @@
         </div>
     @endif
 
-    <div class="card border-0 mb-5">
-        <div class="card-body p-5 text-center" style="background-color: #fafafa; border-radius: 12px;">
-            <h1 class="fw-bold mb-3" style="color: #d4a017;">{{ $course->title }}</h1>
-            <p class="lead text-muted">{{ $course->description }}</p>
-            <span class="badge px-3 py-2 fs-6" style="background-color: #333;">Уровень: {{ $course->level }}</span>
-        </div>
+<div class="card-body p-5 text-center" style="background-color: #fafafa; border-radius: 12px;">
+    <h1 class="fw-bold mb-3" style="color: #d4a017;">{{ $course->title }}</h1>
+    <p class="lead text-muted">{{ $course->description }}</p>
+    
+    <span class="badge px-3 py-2 fs-6" style="background-color: #333;">Уровень: {{ $course->level }}</span>
+
+    <div class="mt-4">
+        @livewire('favorite-button', ['course' => $course])
     </div>
+</div>
+
+
 
     <div class="row">
         <div class="col-md-12">

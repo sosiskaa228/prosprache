@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Prosprache</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    @livewireStyles
 </head>
 <body>
     <header style="background-color: #1a1a1a;" class="text-white p-3">
@@ -57,6 +58,6 @@
         
     </footer>
 
-
+@livewireScripts
 </body>
 </html>

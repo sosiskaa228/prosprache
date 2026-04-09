@@ -22,7 +22,15 @@
                     <h5 class="mb-0 fw-bold">{{ $course->title }}</h5>
                     <div>
                         <span class="text-muted me-3">{{ $course->level }}</span>
-                        <a href="/courses/{{ $course->id }}" style="color: #d4a017; font-weight: bold; text-decoration: none;">Перейти</a>
+                        @auth
+                            @if(auth()->user()->role === 'teacher')
+                                <a href="{{ route('teacher.courses.edit', ['course' => $course->id]) }}" style="color: #d4a017; font-weight: bold; text-decoration: none;">Редактировать</a>
+                            @else
+                                <a href="{{ route('courses.show', ['id' => $course->id]) }}" style="color: #d4a017; font-weight: bold; text-decoration: none;">Перейти</a>
+                            @endif
+                        @else
+                            <a href="{{ route('courses.show', ['id' => $course->id]) }}" style="color: #d4a017; font-weight: bold; text-decoration: none;">Перейти</a>
+                        @endauth
                     </div>
                 </div>
             </div>

@@ -16,7 +16,11 @@
     <span class="badge px-3 py-2 fs-6" style="background-color: #333;">Уровень: {{ $course->level }}</span>
 
     <div class="mt-4">
-        @livewire('favorite-button', ['course' => $course])
+        @auth
+            @if(auth()->user()->role !== 'teacher')
+                @livewire('favorite-button', ['course' => $course])
+            @endif
+        @endauth
     </div>
 </div>
 
@@ -25,7 +29,12 @@
     <div class="row">
         <div class="col-md-12">
             
-            @if(auth()->check() && auth()->user()->courses->contains($course->id))
+            @if(auth()->check() && auth()->user()->role === 'teacher')
+                <div class="alert alert-info mt-3">
+                    Управление курсом доступно в кабинете преподавателя.
+                    <a href="{{ route('teacher.courses.edit', ['course' => $course->id]) }}" class="fw-bold">Перейти к редактированию</a>
+                </div>
+            @elseif(auth()->check() && auth()->user()->courses()->where('course_id', $course->id)->wherePivot('status', 'approved')->exists())
                 
                 <h3 class="mb-4 style="color: #333;>Материалы курса (Уроки)</h3>
                 
@@ -60,13 +69,20 @@
                     @endforeach
                 </ul>
 
-                @if($course->tests->count() > 0)
+                @php
+                    $availableTests = $course->tests->filter(fn($t) => $t->questions->count() > 0);
+                @endphp
+
+                @if($availableTests->count() > 0)
                     <h3 class="mt-5 mb-4  style="color: #333;>Итоговый тест</h3>
                     
                     <ul class="list-group mb-4 rounded-3">
-                        @foreach($course->tests as $test)
+                        @foreach($availableTests as $test)
                             @php
-                                $hasPassed = auth()->user()->testResults->contains('test_id', $test->id);
+                                $result = auth()->user()->testResults->where('test_id', $test->id)->first();
+                                $totalQ = $test->questions->count();
+                                $percent = $result && $totalQ > 0 ? round(($result->score / $totalQ) * 100) : 0;
+                                $hasPassed = $result && $percent >= $test->passing_score;
                             @endphp
 
                             <li class="list-group-item d-flex justify-content-between align-items-center py-4 border-0 ">
@@ -77,16 +93,15 @@
                                 <div>
                                     @if($hasPassed)
                                         @php
-                                            $result = auth()->user()->testResults->where('test_id', $test->id)->first();
-                                            $totalQ = $test->questions->count();
-                                            $percent = $totalQ > 0 ? round(($result->score / $totalQ) * 100) : 0;
+                                            // $percent уже посчитан выше
                                         @endphp
-                                        
-                                        <button class="btn btn-success btn-sm fw-bold px-4 py-2">
-                                        Пройден ({{ $percent }}%)
+                                        <button class="btn btn-success btn-sm fw-bold px-4 py-2" disabled>
+                                            Пройден ({{ $percent }}%)
                                         </button>
                                     @else
-                                        <a href="/lesson/{{ $test->id }}/test" class="btn btn-primary btn-sm fw-bold px-4 py-2" style="background-color: #d4a017; border: none;">Начать тест</a>
+                                        <a href="/lesson/{{ $test->id }}/test" class="btn btn-primary btn-sm fw-bold px-4 py-2" style="background-color: #d4a017; border: none;">
+                                            Пройти тест
+                                        </a>
                                     @endif
                                 </div>
                             </li>
@@ -100,7 +115,7 @@
                     <h3 class="mb-3 fw-bold" style="color: #ff4800;">Вы еще не записаны на этот курс!</h3>
                     <p class="text-muted mb-4 fs-5">Материалы и тесты скрыты. Оставьте заявку, чтобы получить доступ ко всему обучению.</p>
                     
-                    <form action="/courses/{{ $course->id }}/enroll" method="POST">
+                    <form action="{{ route('courses.enroll', ['id' => $course->id]) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-lg fw-bold px-5 py-3" style="background-color: #d4a017; border: none; color: #1a1a1a;">
                             Оставить заявку

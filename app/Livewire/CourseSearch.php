@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Course;
 use App\Models\TeacherProfile;
+use Illuminate\Support\Facades\Auth;
 
 class CourseSearch extends Component
 {
@@ -24,7 +25,12 @@ class CourseSearch extends Component
 
     public function render()
     {
-        $query = Course::query();
+        if (Auth::check() && Auth::user()->role === 'teacher') {
+            $teacher = TeacherProfile::where('user_id', Auth::user()->id)->first();
+            $query = $teacher ? $teacher->courses() : Course::query()->whereRaw('1 = 0');
+        } else {
+            $query = Course::query();
+        }
 
         if ($this->search) {
             $query->where('title', 'like', '%' . $this->search . '%');

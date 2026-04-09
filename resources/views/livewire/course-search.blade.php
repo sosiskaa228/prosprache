@@ -29,17 +29,33 @@
         @forelse($courses as $course)
             <div class="col-md-4">
                 <div class="p-4 bg-light position-relative h-100 shadow-sm rounded-4 border-0">
-                    <div style="position: absolute; top: 15px; right: 15px;">
-                         @livewire('favorite-button', ['course' => $course], key('search-'.$course->id))
-                    </div>
+                    @auth
+                        @if(auth()->user()->role !== 'teacher')
+                            <div style="position: absolute; top: 15px; right: 15px;">
+                                @livewire('favorite-button', ['course' => $course], key('search-'.$course->id))
+                            </div>
+                        @endif
+                    @endauth
 
                     <h4 class="fw-bold pe-5">{{ $course->title }}</h4>
                     <p class="text-muted small mb-2">Уровень: <strong>{{ $course->level }}</strong></p>
                     <p class="text-secondary mb-4" style="font-size: 0.9rem;">{{ $course->description }}</p>
                     
-                    <a href="/courses/{{ $course->id }}" class="btn btn-sm fw-bold px-3 py-2" style="background-color: #d4a017; border: none; color: #1a1a1a;">
-                        Подробнее
-                    </a>
+                    @auth
+                        @if(auth()->user()->role === 'teacher')
+                            <a href="{{ route('teacher.courses.edit', ['course' => $course->id]) }}" class="btn btn-sm fw-bold px-3 py-2" style="background-color: #d4a017; border: none; color: #1a1a1a;">
+                                Редактировать
+                            </a>
+                        @else
+                            <a href="{{ route('courses.show', ['id' => $course->id]) }}" class="btn btn-sm fw-bold px-3 py-2" style="background-color: #d4a017; border: none; color: #1a1a1a;">
+                                Подробнее
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('courses.show', ['id' => $course->id]) }}" class="btn btn-sm fw-bold px-3 py-2" style="background-color: #d4a017; border: none; color: #1a1a1a;">
+                            Подробнее
+                        </a>
+                    @endauth
                 </div>
             </div>
         @empty

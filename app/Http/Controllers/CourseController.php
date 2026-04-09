@@ -17,7 +17,24 @@ class CourseController extends Controller {
     }
 
     public function enroll($id) {
-        return back()->with('success', 'Ваша заявка принята на рассмотрение! Как только преподаватель её одобрит, уроки откроются.');
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $course = Course::findOrFail($id);
+
+        $existing = $user->courses()->where('course_id', $course->id)->first();
+        if ($existing) {
+            $status = $existing->pivot->status ?? 'approved';
+            if ($status === 'pending') {
+                return back()->with('success', 'Заявка уже отправлена и ожидает подтверждения преподавателя.');
+            }
+        }
+
+        $user->courses()->attach($course->id, ['status' => 'pending']);
+
+        return back()->with('success', 'Заявка отправлена преподавателю. Доступ появится после подтверждения.');
     }
 
 }
